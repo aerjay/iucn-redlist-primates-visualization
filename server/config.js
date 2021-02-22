@@ -10,10 +10,9 @@ if (nodeEnv !== "production") {
   const path = `.env${nodeEnv ? `.${nodeEnv}` : ""}`;
   env = dotenv.config({ path });
   if (env.error) logger.error(`Loading config file from ${path} failed. ` + env.error);
-  logger.debug(env);
 }
 
-export const config = {
+const config = {
   app: {
     port: getenv.int("APP_PORT"),
   },
@@ -29,3 +28,5 @@ export const config = {
     url: getenv("RED_LIST_API_URL"),
   },
 };
+
+module.exports = config;

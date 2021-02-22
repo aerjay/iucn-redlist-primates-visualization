@@ -14,9 +14,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.get("/primates", async (_req, res, next) => {
-  const allPrimates = await data.getAllPrimates().catch((error) => next(new Error(error)));
+  const j = await data.getAllPrimates().catch((error) => next(new Error(error)));
   logger.debug("Sending all primates data to client.");
-  return res.json(allPrimates);
+  return res.json(j);
 });
 
 app.put("/primates", async (_req, res, next) => {
@@ -43,11 +43,11 @@ app.listen(config.app.port, () => {
   logger.info(`server has started on port ${config.app.port}`);
 });
 
-// TEST
+/* TEST
 (async () => {
   try {
     logger.debug(config);
   } catch (error) {
     logger.error(error);
   }
-})();
+})();*/

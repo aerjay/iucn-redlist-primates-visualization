@@ -4,7 +4,7 @@ const path = require("path");
 
 const logFormat = printf((info) => `${info.timestamp} ${info.level} [${info.label}]: ${JSON.stringify(info.message)}`);
 
-export const logger = createLogger({
+const logger = createLogger({
   level: process.env.NODE_ENV === "production" ? "info" : "debug",
   exitOnError: false,
   format: combine(
@@ -22,3 +22,5 @@ export const logger = createLogger({
   exceptionHandlers: [new transports.File({ filename: "logs/exceptions.log", format: logFormat })],
   rejectionHandlers: [new transports.File({ filename: "logs/rejections.log", format: logFormat })],
 });
+
+module.exports = logger;

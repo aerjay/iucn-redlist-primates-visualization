@@ -13,6 +13,14 @@ const animalsData = got.extend({
   },
 });
 
+function delay() {
+  return new Promise(function (resolve, _reject) {
+    setTimeout(function () {
+      resolve();
+    }, 1500);
+  });
+}
+
 async function getAllPrimatesName() {
   let allPrimatesName = [];
   const { count } = await animalsData.get(`speciescount`);
@@ -21,6 +29,7 @@ async function getAllPrimatesName() {
   logger.debug(`Total # of pages to iterate: ${maxPageNum}`);
 
   for (let i = 0; i <= maxPageNum; i++) {
+    await delay();
     const { result } = await animalsData.get(`species/page/${i}`);
     const primatesName = result
       .filter((animal) => animal.order_name === "PRIMATES")
@@ -36,12 +45,13 @@ async function getAllSpeciesData(names, link) {
   let allPrimatesData = [];
 
   for (let i = 0; i < names.length; i++) {
-    const name = allPrimates[i];
+    const name = names[i];
+    await delay();
     const result = await animalsData.get(`${link}/${name}`);
     allPrimatesData = allPrimatesData.concat(result);
   }
 
-  logger.debug(`Primates data: ${allPrimatesData.toString()}`);
+  logger.debug(`Primates data: ${JSON.stringify(allPrimatesData)}`);
   return allPrimatesData;
 }
 
@@ -50,7 +60,8 @@ async function populatePrimatesTable(names) {
   let addedPrimates = [];
 
   for (let i = 0; i < speciesData.length; i++) {
-    const primate = speciesData[i].result;
+    const primate = speciesData[i].result[0];
+    await delay();
     const citation = await animalsData.get(`species/citation/${primate.scientific_name}`);
     const res = await db.populatePrimatesTable(
       primate.scientific_name,
@@ -173,39 +184,38 @@ async function populateDescriptionTable(names) {
   let addedPrimates = [];
 
   for (let i = 0; i < allPrimates.length; i++) {
-    const descriptions = allPrimates[i].result;
+    const description = allPrimates[i].result[0];
     const primateName = allPrimates[i].name;
-    for (let y = 0; y < descriptions.length; y++) {
-      const description = descriptions[y];
-      const res = await db.populateDescriptionsTable(
-        primateName,
-        description.taxonomicnotes,
-        description.rationale,
-        description.geographicrange,
-        description.population,
-        description.habitat,
-        description.threats,
-        description.conservationmeasures,
-        description.usetrade
-      );
-      addedPrimates = addedPrimates.concat(res);
-    }
+    const res = await db.populateDescriptionsTable(
+      primateName,
+      description.taxonomicnotes,
+      description.rationale,
+      description.geographicrange,
+      description.population,
+      description.habitat,
+      description.threats,
+      description.conservationmeasures,
+      description.usetrade
+    );
+    addedPrimates = addedPrimates.concat(res);
   }
 
   return addedPrimates;
 }
 
-export async function getAllPrimates() {
-  let allPrimates = await db.getAllPrimates();
-  if (allPrimates.length <= 0) {
-    const names = await getAllPrimatesName();
-    allPrimates = await populatePrimatesTable(names);
-  }
-  return allPrimates;
-}
+module.exports = {
+  async getAllPrimates() {
+    let allPrimates = await db.getAllPrimates();
+    if (allPrimates.length <= 0) {
+      const names = await getAllPrimatesName();
+      allPrimates = await populatePrimatesTable(names);
+    }
+    return allPrimates;
+  },
 
-export async function updateAllPrimates() {
-  const names = await getAllPrimatesName();
-  const allPrimates = await populatePrimatesTable(names);
-  return allPrimates;
-}
+  async updateAllPrimates() {
+    const names = await getAllPrimatesName();
+    const allPrimates = await populatePrimatesTable(names);
+    return allPrimates;
+  },
+};

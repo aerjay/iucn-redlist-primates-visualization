@@ -62,7 +62,7 @@ CREATE TABLE habitats(
 );
 
 CREATE TABLE descriptions(
-  name TEXT REFERENCES primates (name) ON UPDATE cascade,
+  name TEXT PRIMARY KEY REFERENCES primates (name) ON UPDATE cascade,
   taxonomicnotes TEXT,
   rationale TEXT,
   geographicrange TEXT,
@@ -73,6 +73,16 @@ CREATE TABLE descriptions(
   usetrade TEXT,
   updated_at DATE NOT NULL DEFAULT NOW()
 );
+
+alter table threats add constraint threats_pkey primary key (name, code);
+
+alter table conservation_measures add constraint conservation_measures_pkey primary key (name, code);
+
+alter table assessments add constraint assessments_pkey primary key (name, code);
+
+alter table countries add constraint countries_pkey primary key (name, country);
+
+alter table habitats add constraint habitats_pkey primary key (name, code);
 
 CREATE OR REPLACE FUNCTION trigger_set_timestamp()
 RETURNS TRIGGER AS $$
