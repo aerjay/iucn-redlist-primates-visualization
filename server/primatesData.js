@@ -55,7 +55,7 @@ async function getAllSpeciesData(names, link) {
   return allPrimatesData;
 }
 
-async function populatePrimatesTable(names) {
+async function populateSpeciesTable(names) {
   const speciesData = await getAllSpeciesData(names, `species`);
   let addedPrimates = [];
 
@@ -63,7 +63,7 @@ async function populatePrimatesTable(names) {
     const primate = speciesData[i].result[0];
     await delay();
     const citation = await animalsData.get(`species/citation/${primate.scientific_name}`);
-    const res = await db.populatePrimatesTable(
+    const res = await db.populateSpeciesTable(
       primate.scientific_name,
       primate.family,
       primate.genus,
@@ -208,14 +208,14 @@ module.exports = {
     let allPrimates = await db.getAllPrimates();
     if (allPrimates.length <= 0) {
       const names = await getAllPrimatesName();
-      allPrimates = await populatePrimatesTable(names);
+      allPrimates = await populateSpeciesTable(names);
     }
     return allPrimates;
   },
 
   async updateAllPrimates() {
     const names = await getAllPrimatesName();
-    const allPrimates = await populatePrimatesTable(names);
+    const allPrimates = await populateSpeciesTable(names);
     return allPrimates;
   },
 };

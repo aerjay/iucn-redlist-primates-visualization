@@ -1,11 +1,6 @@
-CREATE DATABASE mammals;
+CREATE DATABASE primates;
 
-/*
-common name = main_common_name
-name = scientific_name
-*/
-
-CREATE TABLE primates(
+CREATE TABLE species(
   name TEXT PRIMARY KEY,
   family TEXT NOT NULL,
   genus TEXT NOT NULL,

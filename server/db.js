@@ -41,7 +41,7 @@ module.exports = {
     return res.rows;
   },
 
-  async populatePrimatesTable(
+  async populateSpeciesTable(
     name,
     family,
     genus,
@@ -86,7 +86,7 @@ module.exports = {
       "terrestrial_system",
       "citation",
     ];
-    const res = await this.populateTable("primates", columns, rows, ["name"]);
+    const res = await this.populateTable("species", columns, rows, ["name"]);
     return res;
   },
 
