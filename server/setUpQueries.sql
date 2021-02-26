@@ -23,14 +23,16 @@ CREATE TABLE threats(
   title TEXT,
   timing TEXT,
   score TEXT,
-  updated_at DATE NOT NULL DEFAULT NOW()
+  updated_at DATE NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (name, code);
 );
 
 CREATE TABLE conservation_measures(
   name TEXT REFERENCES primates (name) ON UPDATE cascade,
   code TEXT,
   title TEXT,
-  updated_at DATE NOT NULL DEFAULT NOW()
+  updated_at DATE NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (name, code)
 );
 
 CREATE TABLE assessments(
@@ -38,7 +40,8 @@ CREATE TABLE assessments(
   year SMALLINT,
   code TEXT,
   category TEXT,
-  updated_at DATE NOT NULL DEFAULT NOW()
+  updated_at DATE NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (name, code)
 );
 
 CREATE TABLE countries(
@@ -46,14 +49,16 @@ CREATE TABLE countries(
   country TEXT,
   presence TEXT,
   origin TEXT,
-  updated_at DATE NOT NULL DEFAULT NOW()
+  updated_at DATE NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (name, country)
 );
 
 CREATE TABLE habitats(
   name TEXT REFERENCES primates (name) ON UPDATE cascade,
   code TEXT,
   habitat TEXT,
-  updated_at DATE NOT NULL DEFAULT NOW()
+  updated_at DATE NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (name, code)
 );
 
 CREATE TABLE descriptions(
@@ -68,16 +73,6 @@ CREATE TABLE descriptions(
   usetrade TEXT,
   updated_at DATE NOT NULL DEFAULT NOW()
 );
-
-alter table threats add constraint threats_pkey primary key (name, code);
-
-alter table conservation_measures add constraint conservation_measures_pkey primary key (name, code);
-
-alter table assessments add constraint assessments_pkey primary key (name, code);
-
-alter table countries add constraint countries_pkey primary key (name, country);
-
-alter table habitats add constraint habitats_pkey primary key (name, code);
 
 CREATE OR REPLACE FUNCTION trigger_set_timestamp()
 RETURNS TRIGGER AS $$
