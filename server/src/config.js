@@ -3,18 +3,13 @@ const logger = require("./logger");
 const getenv = require("getenv");
 const path = require("path");
 
-let nodeEnv = process.env.NODE_ENV;
-if (nodeEnv !== "production") {
-  if (nodeEnv === "development") nodeEnv = "";
-  const envPath = `.env${nodeEnv ? `.${nodeEnv}` : ""}`;
-  env = dotenv.config({ envPath });
+const env = dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
-  if (env.error)
-    logger.error({
-      label: `${path.basename(__filename)}`,
-      message: `CONFIG ERROR! PATH=[${envPath}]\nERROR: ${env.error}`,
-    });
-}
+if (env.error)
+  logger.error({
+    label: `${path.basename(__filename)}`,
+    message: `CONFIG ERROR! PATH=[.env.${process.env.NODE_ENV}]\nERROR: ${env.error}`,
+  });
 
 const config = {
   app: {

@@ -4,17 +4,41 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ."
+    "start": "npm run prod",
+    "build": "npm-run-all clean transpile",
+    "serverProd": "node ./build",
+    "serverDev": "nodemon ./build",
+    "dev": "NODE_ENV=development npm-run-all build serverDev",
+    "prod": "NODE_ENV=production npm-run-all build serverProd",
+    "transpile": "babel ./src --out-dir build",
+    "clean": "rimraf build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/cli": "^7.13.0",
+    "@babel/core": "^7.13.8",
+    "@babel/runtime": "^7.13.8",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "getenv": "^1.0.0",
     "got": "^11.8.1",
+    "npm-run-all": "^4.1.5",
     "pg": "^8.5.1",
+    "rimraf": "^3.0.2",
     "winston": "^3.3.3"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "plugins": [
+      "@babel/plugin-transform-runtime"
+    ]
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.13.8",
+    "@babel/preset-env": "^7.13.8"
   }
 }
