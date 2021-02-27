@@ -1,27 +1,28 @@
-const express = require("express");
+import express, { json, urlencoded } from "express";
+import cors from "cors";
+import { getAllPrimates, updateAllPrimates } from "./model";
+import { config } from "./config";
+import { logger } from "./logger";
+import { basename } from "path";
+
 const app = express();
-const cors = require("cors");
-const model = require("./model");
-const config = require("./config");
-const logger = require("./logger");
-const path = require("path");
-const fileName = path.basename(__filename);
+const fileName = basename(__filename);
 
 // Third-party middleware
 app.use(cors());
 
 // Built-in middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(json());
+app.use(urlencoded({ extended: true }));
 
 // Routes
 app.get("/primates", async (_req, res, next) => {
-  const primatesData = await model.getAllPrimates().catch((error) => next(new Error(error)));
+  const primatesData = await getAllPrimates().catch((error) => next(new Error(error)));
   return res.json(primatesData);
 });
 
 app.put("/primates", async (_req, res, next) => {
-  const primatesData = await model.updateAllPrimates().catch((error) => next(new Error(error)));
+  const primatesData = await updateAllPrimates().catch((error) => next(new Error(error)));
   return res.json(primatesData);
 });
 

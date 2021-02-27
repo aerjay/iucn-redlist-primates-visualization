@@ -1,11 +1,11 @@
-const { createLogger, format, transports } = require("winston");
-const { combine, timestamp, printf, metadata } = format;
+import { createLogger, format, transports } from "winston";
 
+const { combine, timestamp, printf, metadata } = format;
 const logFormat = printf(
   ({ timestamp, level, label, message }) => `${timestamp} ${level} [${label ?? "-"}]: ${message}`
 );
 
-const logger = createLogger({
+export const logger = createLogger({
   exitOnError: false,
   format: combine(
     timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
@@ -22,5 +22,3 @@ const logger = createLogger({
   exceptionHandlers: [new transports.File({ filename: "logs/exceptions.log" })],
   rejectionHandlers: [new transports.File({ filename: "logs/rejections.log" })],
 });
-
-module.exports = logger;

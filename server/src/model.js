@@ -1,10 +1,19 @@
-const db = require("./db");
-const got = require("got");
-const config = require("./config");
-const logger = require("./logger");
-const path = require("path");
+import * as db from "./db";
+import { extend } from "got";
+import { config } from "./config";
+import { logger } from "./logger";
+import { basename } from "path";
+
 const SPECIES_PER_PAGE = 10000;
-const fileName = path.basename(__filename);
+const fileName = basename(__filename);
+const animalsData = extend({
+  prefixUrl: config.api.url,
+  responseType: "json",
+  resolveBodyOnly: true,
+  searchParams: {
+    token: config.api.token,
+  },
+});
 
 function delay() {
   return new Promise(function (resolve, _reject) {
@@ -13,15 +22,6 @@ function delay() {
     }, 1500);
   });
 }
-
-const animalsData = got.extend({
-  prefixUrl: config.api.url,
-  responseType: "json",
-  resolveBodyOnly: true,
-  searchParams: {
-    token: config.api.token,
-  },
-});
 
 async function getAnimalsData(link) {
   try {
@@ -265,21 +265,19 @@ async function populateDescriptionTable(names) {
   return addedPrimates;
 }
 
-module.exports = {
-  // TODO: Determine if we need to send information from all tables in db
-  async getAllPrimates() {
-    let allPrimates = await db.getAllPrimates();
-    if (allPrimates.length <= 0) {
-      const names = await getAllPrimatesNames();
-      allPrimates = await populateSpeciesTable(names);
-    }
-    return allPrimates;
-  },
-
-  // TODO: Determine if we need to send information after populating any tables in db
-  async updateAllPrimates() {
+// TODO: Determine if we need to send information from all tables in db
+export async function getAllPrimates() {
+  let allPrimates = await db.getAllPrimates();
+  if (allPrimates.length <= 0) {
     const names = await getAllPrimatesNames();
-    const allPrimates = await populateSpeciesTable(names);
-    return allPrimates;
-  },
-};
+    allPrimates = await populateSpeciesTable(names);
+  }
+  return allPrimates;
+}
+
+// TODO: Determine if we need to send information after populating any tables in db
+export async function updateAllPrimates() {
+  const names = await getAllPrimatesNames();
+  const allPrimates = await populateSpeciesTable(names);
+  return allPrimates;
+}
