@@ -5,11 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run prod",
+    "start:dev": "nodemon",
     "build": "npm-run-all clean transpile",
-    "serverProd": "node ./build",
-    "serverDev": "nodemon ./build",
-    "dev": "NODE_ENV=development npm-run-all build serverDev",
-    "prod": "NODE_ENV=production npm-run-all build serverProd",
+    "server": "node ./build",
+    "dev": "NODE_ENV=development npm-run-all build server",
+    "prod": "NODE_ENV=production npm-run-all build server",
     "transpile": "babel ./src --out-dir build",
     "clean": "rimraf build"
   },
@@ -28,6 +28,17 @@
     "pg": "^8.5.1",
     "rimraf": "^3.0.2",
     "winston": "^3.3.3"
+  },
+  "nodemonConfig": {
+    "exec": "npm run dev",
+    "watch": [
+      "src/*"
+    ],
+    "ignore": [
+      "**/__tests__/**",
+      "*.test.js",
+      "*.spec.js"
+    ]
   },
   "babel": {
     "presets": [
