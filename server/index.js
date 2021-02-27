@@ -1,9 +1,11 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const data = require("./primatesData");
+const model = require("./model");
 const config = require("./config");
 const logger = require("./logger");
+const path = require("path");
+const fileName = path.basename(__filename);
 
 // Third-party middleware
 app.use(cors());
@@ -14,15 +16,13 @@ app.use(express.urlencoded({ extended: true }));
 
 // Routes
 app.get("/primates", async (_req, res, next) => {
-  const j = await data.getAllPrimates().catch((error) => next(new Error(error)));
-  logger.debug("Sending all primates data to client.");
-  return res.json(j);
+  const primatesData = await model.getAllPrimates().catch((error) => next(new Error(error)));
+  return res.json(primatesData);
 });
 
 app.put("/primates", async (_req, res, next) => {
-  const updateAllPrimates = await data.updateAllPrimates().catch((error) => next(new Error(error)));
-  logger.debug("Sending all updated primates data to client.");
-  return res.json(updateAllPrimates);
+  const primatesData = await model.updateAllPrimates().catch((error) => next(new Error(error)));
+  return res.json(primatesData);
 });
 
 app.get("*", function (req, _res, next) {
@@ -34,20 +34,15 @@ app.get("*", function (req, _res, next) {
 // Application-level middleware
 app.use((error, _req, res, _next) => {
   error.statusCode = error.statusCode || 500;
-  logger.error(error.name + error.statusCode + error.message + error.stack);
+  logger.error({
+    label: `${fileName}`,
+    message: `ERROR: ${error.name} ${error.statusCode} ${error.message} ${error.stack}`,
+  });
   return res.status(error.statusCode).json({ error: error.toString() });
 });
 
 // Start
 app.listen(config.app.port, () => {
-  logger.info(`server has started on port ${config.app.port}`);
+  logger.info({ label: `${fileName}`, message: `Server has started on port ${config.app.port}` });
+  logger.debug({ label: `${fileName}`, message: `\nConfig:\n${JSON.stringify(config, null, 1)}` });
 });
-
-/* TEST
-(async () => {
-  try {
-    logger.debug(config);
-  } catch (error) {
-    logger.error(error);
-  }
-})();*/

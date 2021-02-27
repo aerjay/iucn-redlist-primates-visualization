@@ -24,7 +24,7 @@ CREATE TABLE threats(
   timing TEXT,
   score TEXT,
   updated_at DATE NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (name, code);
+  PRIMARY KEY (name, code)
 );
 
 CREATE TABLE conservation_measures(

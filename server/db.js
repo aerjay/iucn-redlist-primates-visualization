@@ -1,6 +1,8 @@
 const Pool = require("pg").Pool;
 const config = require("./config");
 const logger = require("./logger");
+const path = require("path");
+const fileName = path.basename(__filename);
 
 const pool = new Pool({
   user: config.psql.username,
@@ -11,25 +13,42 @@ const pool = new Pool({
 });
 
 pool.on("error", (error, _client) => {
-  logger.error(error.name + error.message + error.stack);
-  process.exit(-1);
+  logger.error({
+    label: `${fileName}`,
+    message: `DATABASE ERROR!\nERROR: ${error.name} ${error.message} ${error.stack}`,
+  });
 });
 
 module.exports = {
   async query(text, params) {
-    const start = Date.now();
-    const res = await pool.query(text, params);
-    const duration = Date.now() - start;
-    logger.debug("executed query: " + text + " duration: " + duration + " row count: " + res.rowCount);
-    return res;
+    try {
+      const start = Date.now();
+      const res = await pool.query(text, params);
+      const duration = Date.now() - start;
+
+      logger.debug({
+        label: `${fileName}`,
+        message: `Database Query:[${text}] Params:[${params ?? "none"}] Duration:[${duration}] #Rows:[${res.rowCount}]`,
+      });
+
+      return res;
+    } catch (error) {
+      logger.error({
+        label: `${fileName}`,
+        message: `DATABASE ERROR! QUERY:[${text}] PARAMS:[${params ?? "none"}]\nERROR: ${error.name} ${error.message} ${
+          error.stack
+        }`,
+      });
+    }
   },
 
-  // Double check
+  // TODO: Determine if we need to send information from all tables in db
   async getAllPrimates() {
-    const res = await this.query("SELECT * FROM primates");
+    const res = await this.query("SELECT * FROM species");
     return res.rows;
   },
 
+  // TODO: Determine if we need to send information after populating any tables in db
   async populateTable(tableName, columns, rows, primaryKeys) {
     const numOfCols = [...columns.keys()].map((i) => `\$${i + 1}`);
     const nonPrimaryCols = columns.filter((col) => !primaryKeys.includes(col)).map((col) => `${col}=EXCLUDED.${col}`);

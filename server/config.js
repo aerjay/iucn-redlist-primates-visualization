@@ -1,15 +1,19 @@
 const dotenv = require("dotenv");
 const logger = require("./logger");
 const getenv = require("getenv");
+const path = require("path");
 
 let nodeEnv = process.env.NODE_ENV;
 if (nodeEnv !== "production") {
-  // Development will use .env, anything else will use .env.<NODE_ENV>
   if (nodeEnv === "development") nodeEnv = "";
+  const envPath = `.env${nodeEnv ? `.${nodeEnv}` : ""}`;
+  env = dotenv.config({ envPath });
 
-  const path = `.env${nodeEnv ? `.${nodeEnv}` : ""}`;
-  env = dotenv.config({ path });
-  if (env.error) logger.error(`Loading config file from ${path} failed. ` + env.error);
+  if (env.error)
+    logger.error({
+      label: `${path.basename(__filename)}`,
+      message: `CONFIG ERROR! PATH=[${envPath}]\nERROR: ${env.error}`,
+    });
 }
 
 const config = {
